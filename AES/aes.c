@@ -71,9 +71,8 @@ static uint8_t gf8_mul(uint8_t a, uint8_t b)
 */
 static void AddRoundKey(uint8_t *state, const uint32_t *roundKey) {
   int i;
-  for (i = 0; Nb > i; i++) {
+  for (i = 0; Nb > i; i++)
     *(((uint32_t *)state) + i) = *(((uint32_t *)state) + i) ^ roundKey[i];
-  }
 }
 
 /*
@@ -82,9 +81,8 @@ static void AddRoundKey(uint8_t *state, const uint32_t *roundKey) {
 */
 static void SubBytes(uint8_t *state, int mode) {
   int i;
-  for(i = 0; BLOCKLEN > i; i++) {
+  for(i = 0; BLOCKLEN > i; i++)
     *(state + i) = (mode ? sbox[*(state + i)] : isbox[*(state + i)]);
-  }
 }
 
 /*
@@ -98,9 +96,8 @@ static void ShiftRows(uint8_t *state, int mode) {
   int i;
   uint8_t tempVect[BLOCKLEN] = {};
   memcpy(tempVect, state, BLOCKLEN);
-  for (i = 0; BLOCKLEN > i; i++) { 
+  for (i = 0; BLOCKLEN > i; i++)
     *(state + i) = *(tempVect + ((((i / Nb) * Nb) + ((mode ? 5 : 13) * (i % Nb))) % BLOCKLEN));
-  }
 }
 
 /*
@@ -114,9 +111,9 @@ static void MixColumns(uint8_t *state, int mode) {
   memcpy(tempVect, state, BLOCKLEN);
   for (i = 0; BLOCKLEN > i; i++) {
     *(state + i) = gf8_mul(*(tempVect + ((i / Nb) * Nb)), (mode ? M[(Nb * (i % Nb))] : IM[(Nb * (i % Nb))])) ^
-                                            gf8_mul(*(tempVect + ((i / Nb) * Nb) + 1), (mode ? M[(Nb * (i % Nb)) + 1] : IM[(Nb * (i % Nb)) + 1])) ^
-                                            gf8_mul(*(tempVect + ((i / Nb) * Nb) + 2), (mode ? M[(Nb * (i % Nb)) + 2] : IM[(Nb * (i % Nb)) + 2])) ^
-                                            gf8_mul(*(tempVect + ((i / Nb) * Nb) + 3), (mode ? M[(Nb * (i % Nb)) + 3] : IM[(Nb * (i % Nb)) + 3]));
+                    gf8_mul(*(tempVect + ((i / Nb) * Nb) + 1), (mode ? M[(Nb * (i % Nb)) + 1] : IM[(Nb * (i % Nb)) + 1])) ^
+                    gf8_mul(*(tempVect + ((i / Nb) * Nb) + 2), (mode ? M[(Nb * (i % Nb)) + 2] : IM[(Nb * (i % Nb)) + 2])) ^
+                    gf8_mul(*(tempVect + ((i / Nb) * Nb) + 3), (mode ? M[(Nb * (i % Nb)) + 3] : IM[(Nb * (i % Nb)) + 3]));
   }
 }
 
@@ -130,7 +127,7 @@ static void MixColumns(uint8_t *state, int mode) {
  *              sbox[((uint8_t *)(roundKey + i))[(j + 1) % Nk]] ^ (j == 0 ? Rcon[(i / Nk) + 1] : 0)
  */
 void KeyExpansion(const uint8_t *key, uint32_t *roundKey)
-{ 
+{
   int i, j;
   uint8_t gVect[Nk] = {};
   for(i = 0; Nk > i; i++) {
@@ -139,11 +136,9 @@ void KeyExpansion(const uint8_t *key, uint32_t *roundKey)
   }
   for(i = Nk; RNDKEYSIZE > i; i ++) {
     *(roundKey + i) = *(roundKey + i - Nk) ^ (i % Nk == 0 ? *((uint32_t *)gVect) : *(roundKey + i - 1));
-    if (i % Nk == (Nk - 1)) {
-      for (j = 0; Nk > j; j++) {
+    if (i % Nk == (Nk - 1))
+      for (j = 0; Nk > j; j++)
         gVect[j] = sbox[((uint8_t *)(roundKey + i))[(j + 1) % Nk]] ^ (j == 0 ? Rcon[(i / Nk) + 1] : 0);
-      }
-    }
   }
 }
 
